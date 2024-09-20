@@ -12,8 +12,10 @@ async function setPdfFormFields(pdfBytes: Buffer) {
     const fields = form.getFields();
 
     console.log("Editable fields in the PDF:");
-    const uint8Array = readFileSync("test.png");
-    const pngImage = await pdfDoc.embedPng(uint8Array);
+    const greenImage = readFileSync("green.png");
+    const greenImageEmbedded = await pdfDoc.embedPng(greenImage);
+    const blueImage = readFileSync("blue.png");
+    const blueImageEmbedded = await pdfDoc.embedPng(blueImage);
     fields.forEach((field) => {
       try {
         const type = field.constructor.name;
@@ -24,8 +26,11 @@ async function setPdfFormFields(pdfBytes: Buffer) {
           const len = field.getMaxLength();
           field.setText(str.substring(0, len));
           field.setFontSize(12);
-          field.setImage(pngImage);
+          field.setImage(greenImageEmbedded);
           // field.setTextColor(0, 0, 0);
+        } else if (type === "PDFCheckBox") {
+          field.check();
+          field.setImage(blueImageEmbedded);
         }
       } catch (error) {
         console.error("Error processing field:", error);
